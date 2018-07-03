@@ -1,11 +1,3 @@
-# class TelegramWebhooksController < ApplicationController
-#
-#   def update
-#     p 'we got it!!!'
-#   end
-#
-# end
-
 class TelegramWebhooksController < Telegram::Bot::UpdatesController
   include Telegram::Bot::UpdatesController::MessageContext
 

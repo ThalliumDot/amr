@@ -28,7 +28,13 @@ module Telegram
           as: RoutesHelper.route_name_for_bot(bot),
           format: false,
         }.merge!(options)
-        post(['t', ENV['BOT_WEBHOOKS_TOKEN'], 'webhook'].join('/'), params)
+        
+        # change this variable when working with multiple bots
+        # for example instead of `../webhook` at the end use `../#{bot.username}`
+        # (and don't forget to make related changes to `lib/tasks/webhooks.rake`)
+        webhook_url = ['t', ENV['BOT_WEBHOOKS_TOKEN'], 'webhook'].join('/')
+
+        post(webhook_url, params)
         UpdatesPoller.add(bot, controller) if Telegram.bot_poller_mode?
       end
 
