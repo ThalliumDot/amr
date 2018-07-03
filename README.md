@@ -1,24 +1,26 @@
-# README
+# Antizashquer Music Records (c) site and bot
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Development
 
-Things you may want to cover:
+### Bot development
 
-* Ruby version
+Telegram Bot development requires at-least https self-signed sertificate.
+But instead of creating this sertificate and long tuning your machine to 
+work with it, you can simply use [ngrok](https://ngrok.com/download).
 
-* System dependencies
+Just register, download and start it with following command, alongside
+with rails server.
 
-* Configuration
+```
+./ngrok http 3000
+```
 
-* Database creation
+It will work just fine **BUT** don't forget to specify ngrok url in `.env`.
 
-* Database initialization
+```
+# .env
+...
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+DOMAIN=https://123abcd.ngrok.io
+...
+```
