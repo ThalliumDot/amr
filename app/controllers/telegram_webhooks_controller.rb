@@ -64,17 +64,35 @@ class TelegramWebhooksController < Telegram::Bot::UpdatesController
   end
 
   def inline_query(query, _offset)
-    query = query.first(10) # it's just an example, don't use large queries.
-    t_description = t('.description')
-    t_content = t('.content')
-    results = Array.new(5) do |i|
+    if query.length < 1
+      answer_inline_query [
+        {
+          type: :article,
+          title: "Artist1, Artist2",
+          id: "#{query}-#{1}",
+          description: "no-tags no-article",
+          thumb_url: '', #msg.image_url,
+          input_message_content: {
+            message_text: 'ldldldld', #msg.to_article,
+            parse_mode: 'Markdown'
+          },
+        }
+      ]
+      return
+    end
+
+    msg = InlineMessagesService.new(query)
+    msg.to_article
+    results = Array.new(1) do |i|
       {
         type: :article,
-        title: "#{query}-#{i}",
-        id: "#{query}-#{i}",
-        description: "#{t_description} #{i}",
+        title: "Artist1, Artist2",
+        id: "#{i}",
+        description: "no-tags no-article",
+        thumb_url: msg.image_url,
         input_message_content: {
-          message_text: "#{t_content} #{i}",
+          message_text: msg.to_article,
+          parse_mode: 'Markdown'
         },
       }
     end

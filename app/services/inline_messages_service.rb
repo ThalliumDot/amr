@@ -7,34 +7,48 @@ class InlineMessagesService
 
   validate :message_links
 
-  attr_reader :original_msg, :parts
+  attr_reader :original_msg, :parts, :image_url
   attr_internal_reader :random_key
 
+  # TODO: disable preview option
+
+
   def initialize(query)
-    @_random_key = SecureRandom.hex(20)
+    @_random_key  = SecureRandom.hex(20)
     @original_msg = query
-    @parts = split_message(query)
+    @parts        = split_message(query)
+    @image_url    = nil
     valid?
     self
+  end
+
+  def generate_response
+
+  end
+
+  def to_article
+    parts.map do |part|
+      if part.is_a?(GPMProcessor)
+        @image_url ||= part.image_url
+        part.transform
+      else
+        part
+      end
+    end.join("\n\n")
   end
 
 
   private
 
 
-  def split_message(original_message)
-    links = []
+  def split_message(original_message, parts = [])
+    return parts if original_message.blank?
 
-    replaced_links = original_message.gsub(GPM_LINK_REGEXP).with_index do |match, i|
-      links << match
-      "link-#{random_key}[#{random_key}number#{i}]link-#{random_key}"
-    end
+    partitions    = original_message.partition(GPM_LINK_REGEXP).each(&:strip!)
+    partitions[1] = GPMProcessor.new(partitions[1]) if partitions[1].present?
 
-    return nil if links.empty?
-
-    replaced_links.split("link-#{random_key}").map do |part|
-      part.match(/\A\[#{random_key}number(\d*)\]\z/) { |m| m.to_s.to_i } || part.strip
-    end
+    parts.concat(partitions[0..1]).delete_if(&:blank?)
+    split_message(partitions[2], parts)
   end
 
   def message_links
